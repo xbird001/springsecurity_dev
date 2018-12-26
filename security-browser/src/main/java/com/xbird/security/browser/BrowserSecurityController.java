@@ -1,7 +1,9 @@
 package com.xbird.security.browser;
 
 import com.xbird.security.browser.support.SimpleResponse;
+import com.xbird.security.core.properties.SecurityPerproties;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -25,6 +27,9 @@ public class BrowserSecurityController {
 
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
+    @Autowired
+    private SecurityPerproties securitProperties;
+
     @RequestMapping("/authentication/require")
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public SimpleResponse requireAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
@@ -35,7 +40,7 @@ public class BrowserSecurityController {
             //非直接登陆请求，进行判断
             String targetUrl = savedRequest.getRedirectUrl();
             if(StringUtils.endsWithIgnoreCase(targetUrl,".html")) {
-                redirectStrategy.sendRedirect(httpServletRequest,httpServletResponse,"/signIn.html");
+                redirectStrategy.sendRedirect(httpServletRequest,httpServletResponse,securitProperties.getBrowserProperties().getLoginpage());
             }
         }
         return new SimpleResponse("访问服务需要认证，请引导进入登陆页面");

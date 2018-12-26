@@ -1,6 +1,8 @@
 package com.xbird.security.browser.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xbird.security.core.properties.LoginResponseType;
+import com.xbird.security.core.properties.SecurityPerproties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
@@ -17,11 +19,13 @@ public class XbirdAuthenticationFailureHandler extends SimpleUrlAuthenticationFa
     @Autowired
     private ObjectMapper objectMapper;
 
-    private String redirectType = "REDIRECT";
+    @Autowired
+    private SecurityPerproties securitProperties;
+
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        if("JSON".equals(redirectType)) {
+        if(LoginResponseType.JSON.equals(securitProperties.getBrowserProperties().getLoginResponseType())) {
             //直接返回没有授权登陆
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json;chartset=UTF-8");

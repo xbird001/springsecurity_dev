@@ -1,5 +1,6 @@
 package com.xbird.security.browser;
 
+import com.xbird.security.core.properties.SecurityPerproties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,16 +24,19 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationSuccessHandler xbirdAuthenticationSuccessfulHandler;
 
+    @Autowired
+    private SecurityPerproties securitProperties;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin()
-                .loginPage("/authentication/require")
-                .loginProcessingUrl("/authentication/form")
+                .loginPage(securitProperties.getBrowserProperties().getLoginurl())
+                .loginProcessingUrl(securitProperties.getBrowserProperties().getLoginprocess())
                 .successHandler(xbirdAuthenticationSuccessfulHandler)
                 .failureHandler(xbirdAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/signIn.html","/authentication/require","/authentication/form").permitAll()
+                .antMatchers(securitProperties.getBrowserProperties().getLoginpage(),securitProperties.getBrowserProperties().getLoginurl(),securitProperties.getBrowserProperties().getLoginprocess()).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable();
